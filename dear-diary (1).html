@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dear Diary</title>
+<meta name="author" content="Saraa Muddaser">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,500&family=Literata:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-bg: #2E1526;
+    --ink-bg-2: #401C34;
+    --paper: #FDF0F4;
+    --paper-line: #F3D2E0;
+    --ink-text: #4A213B;
+    --ink-muted: #B589A0;
+    --gold: #E8578A;
+    --gold-dark: #B23968;
+    --rose: #F5A9C6;
+    --sage: #C3548A;
+  }
+  *{ box-sizing: border-box; }
+  body{
+    margin:0;
+    min-height:100vh;
+    background: radial-gradient(ellipse at top, var(--ink-bg-2), var(--ink-bg) 70%);
+    font-family: 'Inter', sans-serif;
+    color: var(--paper);
+    padding: 32px 16px 60px;
+  }
+  .wrap{ max-width: 960px; margin: 0 auto; }
+  .masthead{ text-align:center; margin-bottom: 36px; }
+  .masthead h1{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size: 42px;
+    margin: 0;
+    letter-spacing: 0.5px;
+    color: #FBE6EF;
+  }
+  .masthead p{
+    font-family:'Literata', serif;
+    font-style: italic;
+    color: var(--ink-muted);
+    margin: 6px 0 0;
+    font-size: 15px;
+  }
+  .layout{
+    display:grid;
+    grid-template-columns: 260px 1fr;
+    gap: 24px;
+    align-items:start;
+  }
+  @media (max-width: 720px){
+    .layout{ grid-template-columns: 1fr; }
+  }
+
+  /* --- sidebar --- */
+  .sidebar{
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .sidebar h2{
+    font-family:'Fraunces', serif;
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 10px;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .search{
+    width:100%;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(0,0,0,0.2);
+    color: #FBE6EF;
+    font-family:'Inter',sans-serif;
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+  .search::placeholder{ color: rgba(246,239,226,0.4); }
+  .new-btn{
+    width:100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: none;
+    background: var(--gold);
+    color: #3B0F26;
+    font-family:'Inter',sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    cursor:pointer;
+    margin-bottom: 16px;
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+  .new-btn:hover{ background:#F17BA3; transform: translateY(-1px); }
+  .entry-list{ display:flex; flex-direction:column; gap:6px; max-height: 520px; overflow-y:auto; }
+  .entry-item{
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor:pointer;
+    border: 1px solid transparent;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .entry-item:hover{ background: rgba(255,255,255,0.05); }
+  .entry-item.active{
+    background: rgba(201,162,39,0.12);
+    border-color: rgba(201,162,39,0.4);
+  }
+  .entry-item .row1{ display:flex; align-items:center; gap:8px; }
+  .entry-item .mood{ font-size: 15px; }
+  .entry-item .date{ font-size: 12px; color: var(--gold); font-weight:600; }
+  .entry-item .title{
+    font-family:'Literata', serif;
+    font-size: 13.5px;
+    color: #F5D6E3;
+    margin-top: 3px;
+    white-space: nowrap;
+    overflow:hidden;
+    text-overflow: ellipsis;
+  }
+  .empty-sidebar{
+    color: var(--ink-muted);
+    font-family:'Literata', serif;
+    font-style: italic;
+    font-size: 13px;
+    text-align:center;
+    padding: 20px 6px;
+  }
+  .stats{
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    font-size: 12px;
+    color: var(--ink-muted);
+    display:flex;
+    justify-content:space-between;
+  }
+  .stats b{ color:#FBE6EF; font-size:16px; display:block; font-family:'Fraunces',serif; }
+
+  /* --- journal page --- */
+  .page{
+    background: var(--paper);
+    border-radius: 6px 14px 14px 6px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.35), -6px 0 0 rgba(0,0,0,0.15);
+    padding: 34px 40px 40px;
+    position: relative;
+    min-height: 480px;
+  }
+  .page::before{
+    content:"";
+    position:absolute;
+    left:0; top:0; bottom:0;
+    width: 8px;
+    background: linear-gradient(180deg, var(--rose), var(--gold));
+    border-radius: 6px 0 0 6px;
+  }
+  .page-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    border-bottom: 1px solid var(--paper-line);
+    padding-bottom: 14px;
+    margin-bottom: 18px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .date-field input{
+    font-family:'Fraunces', serif;
+    font-weight: 600;
+    font-size: 22px;
+    color: var(--ink-text);
+    border: none;
+    background: transparent;
+    padding: 0;
+  }
+  .mood-picker{ display:flex; gap:6px; }
+  .mood-btn{
+    width: 36px; height:36px;
+    border-radius: 50%;
+    border: 1px solid var(--paper-line);
+    background: #fff;
+    font-size: 17px;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+  .mood-btn:hover{ transform: scale(1.08); }
+  .mood-btn.selected{ border-color: var(--gold-dark); box-shadow: 0 0 0 2px rgba(201,162,39,0.35); }
+
+  .title-input{
+    width:100%;
+    font-family:'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    color: var(--ink-text);
+    border: none;
+    background: transparent;
+    padding: 0 0 14px;
+    outline:none;
+  }
+  .title-input::placeholder{ color: rgba(46,39,64,0.35); }
+
+  .body-input{
+    width:100%;
+    min-height: 260px;
+    font-family:'Literata', serif;
+    font-size: 17px;
+    line-height: 1.9;
+    color: var(--ink-text);
+    border: none;
+    background-image: repeating-linear-gradient(var(--paper) 0px, var(--paper) 34px, var(--paper-line) 35px);
+    outline:none;
+    resize: vertical;
+    padding-top: 2px;
+  }
+  .body-input::placeholder{ color: rgba(46,39,64,0.35); font-style: italic; }
+
+  .page-actions{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top: 22px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .seal-btn{
+    background: var(--gold);
+    color: #3B0F26;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 26px;
+    font-family:'Inter',sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor:pointer;
+    box-shadow: 0 6px 16px rgba(201,162,39,0.35);
+    transition: transform 0.12s ease;
+  }
+  .seal-btn:active{ transform: scale(0.96); }
+  .delete-btn{
+    background: none;
+    border: none;
+    color: var(--ink-muted);
+    font-family:'Inter',sans-serif;
+    font-size: 13px;
+    cursor:pointer;
+    text-decoration: underline;
+  }
+  .delete-btn:hover{ color: var(--rose); }
+  .saved-note{
+    font-family:'Literata', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--sage);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .saved-note.show{ opacity: 1; }
+  .loading{
+    text-align:center;
+    padding: 60px 0;
+    color: var(--ink-muted);
+    font-family:'Literata', serif;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="masthead">
+    <h1>Dear Diary</h1>
+    <p>a place for every day, written down</p>
+  </div>
+
+  <div class="layout">
+    <div class="sidebar">
+      <h2>Past entries</h2>
+      <input class="search" id="searchBox" placeholder="Search entries...">
+      <button class="new-btn" id="newBtn">+ New entry</button>
+      <div class="entry-list" id="entryList">
+        <div class="empty-sidebar">Loading...</div>
+      </div>
+      <div class="stats">
+        <div>Total<br><b id="statCount">0</b></div>
+        <div>This month<br><b id="statMonth">0</b></div>
+      </div>
+    </div>
+
+    <div class="page">
+      <div class="page-top">
+        <div class="date-field">
+          <input type="date" id="dateInput">
+        </div>
+        <div class="mood-picker" id="moodPicker"></div>
+      </div>
+      <input class="title-input" id="titleInput" placeholder="Today's title...">
+      <textarea class="body-input" id="bodyInput" placeholder="How was your day? Write what's on your mind..."></textarea>
+      <div class="page-actions">
+        <button class="seal-btn" id="saveBtn">Seal it (Save)</button>
+        <span class="saved-note" id="savedNote">Saved ✓</span>
+        <button class="delete-btn" id="deleteBtn" style="display:none;">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center; margin-top: 28px; font-family:'Inter', sans-serif; font-size: 12px; color: rgba(255,255,255,0.35);">
+    Made by Saraa Muddaser
+  </div>
+</div>
+
+<script>
+const MOODS = ['😊','😔','😌','😤','😍','😴','🥲','😎'];
+let entries = [];
+let currentId = null;
+
+function uid(){ return 'e' + Date.now() + Math.random().toString(36).slice(2,7); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+
+async function loadEntries(){
+  try{
+    const res = await window.storage.get('diary:entries', false);
+    entries = res ? JSON.parse(res.value) : [];
+  }catch(e){
+    entries = [];
+  }
+  entries.sort((a,b) => b.date.localeCompare(a.date) || b.createdAt - a.createdAt);
+}
+
+async function saveEntries(){
+  try{
+    await window.storage.set('diary:entries', JSON.stringify(entries), false);
+  }catch(e){
+    console.error('Save failed', e);
+  }
+}
+
+function renderMoodPicker(selected){
+  const wrap = document.getElementById('moodPicker');
+  wrap.innerHTML = '';
+  MOODS.forEach(m => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'mood-btn' + (m === selected ? ' selected' : '');
+    b.textContent = m;
+    b.dataset.mood = m;
+    b.onclick = () => {
+      document.querySelectorAll('.mood-btn').forEach(x => x.classList.remove('selected'));
+      b.classList.add('selected');
+    };
+    wrap.appendChild(b);
+  });
+}
+
+function getSelectedMood(){
+  const sel = document.querySelector('.mood-btn.selected');
+  return sel ? sel.dataset.mood : MOODS[0];
+}
+
+function renderList(filter){
+  const list = document.getElementById('entryList');
+  const q = (filter || '').toLowerCase().trim();
+  const filtered = entries.filter(e =>
+    !q || (e.title || '').toLowerCase().includes(q) || (e.body || '').toLowerCase().includes(q)
+  );
+  document.getElementById('statCount').textContent = entries.length;
+  const thisMonth = todayStr().slice(0,7);
+  document.getElementById('statMonth').textContent = entries.filter(e => e.date.slice(0,7) === thisMonth).length;
+
+  if(filtered.length === 0){
+    list.innerHTML = '<div class="empty-sidebar">No entries yet. Write your first one.</div>';
+    return;
+  }
+  list.innerHTML = '';
+  filtered.forEach(e => {
+    const item = document.createElement('div');
+    item.className = 'entry-item' + (e.id === currentId ? ' active' : '');
+    const d = new Date(e.date + 'T00:00:00');
+    const dateLabel = d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+    item.innerHTML = `
+      <div class="row1">
+        <span class="mood">${e.mood || ''}</span>
+        <span class="date">${dateLabel}</span>
+      </div>
+      <div class="title">${e.title || '(untitled)'}</div>
+    `;
+    item.onclick = () => openEntry(e.id);
+    list.appendChild(item);
+  });
+}
+
+function openEntry(id){
+  const e = entries.find(x => x.id === id);
+  if(!e) return;
+  currentId = id;
+  document.getElementById('dateInput').value = e.date;
+  document.getElementById('titleInput').value = e.title || '';
+  document.getElementById('bodyInput').value = e.body || '';
+  renderMoodPicker(e.mood);
+  document.getElementById('deleteBtn').style.display = 'inline';
+  renderList(document.getElementById('searchBox').value);
+}
+
+function newEntry(){
+  currentId = null;
+  document.getElementById('dateInput').value = todayStr();
+  document.getElementById('titleInput').value = '';
+  document.getElementById('bodyInput').value = '';
+  renderMoodPicker(MOODS[0]);
+  document.getElementById('deleteBtn').style.display = 'none';
+  document.getElementById('titleInput').focus();
+  renderList(document.getElementById('searchBox').value);
+}
+
+async function handleSave(){
+  const date = document.getElementById('dateInput').value || todayStr();
+  const title = document.getElementById('titleInput').value.trim();
+  const body = document.getElementById('bodyInput').value.trim();
+  const mood = getSelectedMood();
+  if(!title && !body){
+    return;
+  }
+  if(currentId){
+    const e = entries.find(x => x.id === currentId);
+    if(e){
+      e.date = date; e.title = title; e.body = body; e.mood = mood;
+    }
+  } else {
+    const e = { id: uid(), date, title, body, mood, createdAt: Date.now() };
+    entries.push(e);
+    currentId = e.id;
+  }
+  await saveEntries();
+  entries.sort((a,b) => b.date.localeCompare(a.date) || b.createdAt - a.createdAt);
+  renderList(document.getElementById('searchBox').value);
+  document.getElementById('deleteBtn').style.display = 'inline';
+  const note = document.getElementById('savedNote');
+  note.classList.add('show');
+  setTimeout(() => note.classList.remove('show'), 1800);
+}
+
+async function handleDelete(){
+  if(!currentId) return;
+  entries = entries.filter(x => x.id !== currentId);
+  await saveEntries();
+  newEntry();
+  renderList();
+}
+
+document.getElementById('newBtn').onclick = newEntry;
+document.getElementById('saveBtn').onclick = handleSave;
+document.getElementById('deleteBtn').onclick = handleDelete;
+document.getElementById('searchBox').oninput = (e) => renderList(e.target.value);
+
+(async function init(){
+  await loadEntries();
+  if(entries.length > 0){
+    openEntry(entries[0].id);
+  } else {
+    newEntry();
+  }
+})();
+</script>
+</body>
+</html>
